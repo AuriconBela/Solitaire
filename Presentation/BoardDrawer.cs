@@ -128,25 +128,55 @@ internal class BoardDrawer
 
     private void DrawBoundary(Graphics graphics)
     {
-        // Get the bounds of the cross shape
-        var crossBounds = GetCrossBounds();
-
-        // Draw boundary rectangle around the cross
-        graphics.DrawRectangle(Constants.BoundaryPen, crossBounds);
+        // Create a path that outlines the cross shape
+        using (var crossPath = CreateCrossShapePath())
+        {
+            graphics.DrawPath(Constants.BoundaryPen, crossPath);
+        }
     }
 
-    private Rectangle GetCrossBounds()
+    private GraphicsPath CreateCrossShapePath()
     {
-        // Calculate the bounding rectangle of the cross shape
-        // The cross shape is the entire 7x7 grid area for simplicity
-        var bounds = new Rectangle(
-            _boardOffset.X,
-            _boardOffset.Y,
-            Constants.BoardSize * _cellSize,
-            Constants.BoardSize * _cellSize
-        );
-
-        return bounds;
+        var path = new GraphicsPath();
+        
+        // The Solitaire cross shape consists of three sections:
+        // - Top arm: columns 2-4, rows 0-1 (3×2 cells)
+        // - Middle section: columns 0-6, rows 2-4 (7×3 cells)
+        // - Bottom arm: columns 2-4, rows 5-6 (3×2 cells)
+        // This creates the traditional cross pattern with banned corners
+        
+        int cellSize = _cellSize;
+        int offsetX = _boardOffset.X;
+        int offsetY = _boardOffset.Y;
+        
+        // Start from top-left of the top arm (col 2, row 0)
+        Point startPoint = new Point(offsetX + 2 * cellSize, offsetY);
+        
+        // Top arm outline
+        path.StartFigure();
+        path.AddLine(startPoint.X, startPoint.Y, offsetX + 5 * cellSize, offsetY); // Top edge of top arm
+        path.AddLine(offsetX + 5 * cellSize, offsetY, offsetX + 5 * cellSize, offsetY + 2 * cellSize); // Right edge of top arm
+        
+        // Right side of middle section
+        path.AddLine(offsetX + 5 * cellSize, offsetY + 2 * cellSize, offsetX + 7 * cellSize, offsetY + 2 * cellSize); // Top-right corner
+        path.AddLine(offsetX + 7 * cellSize, offsetY + 2 * cellSize, offsetX + 7 * cellSize, offsetY + 5 * cellSize); // Right edge of middle
+        path.AddLine(offsetX + 7 * cellSize, offsetY + 5 * cellSize, offsetX + 5 * cellSize, offsetY + 5 * cellSize); // Bottom-right corner
+        
+        // Bottom arm outline
+        path.AddLine(offsetX + 5 * cellSize, offsetY + 5 * cellSize, offsetX + 5 * cellSize, offsetY + 7 * cellSize); // Right edge of bottom arm
+        path.AddLine(offsetX + 5 * cellSize, offsetY + 7 * cellSize, offsetX + 2 * cellSize, offsetY + 7 * cellSize); // Bottom edge of bottom arm
+        path.AddLine(offsetX + 2 * cellSize, offsetY + 7 * cellSize, offsetX + 2 * cellSize, offsetY + 5 * cellSize); // Left edge of bottom arm
+        
+        // Left side of middle section
+        path.AddLine(offsetX + 2 * cellSize, offsetY + 5 * cellSize, offsetX, offsetY + 5 * cellSize); // Bottom-left corner
+        path.AddLine(offsetX, offsetY + 5 * cellSize, offsetX, offsetY + 2 * cellSize); // Left edge of middle
+        path.AddLine(offsetX, offsetY + 2 * cellSize, offsetX + 2 * cellSize, offsetY + 2 * cellSize); // Top-left corner
+        
+        // Complete the outline back to start
+        path.AddLine(offsetX + 2 * cellSize, offsetY + 2 * cellSize, offsetX + 2 * cellSize, offsetY); // Left edge of top arm
+        path.CloseFigure();
+        
+        return path;
     }
 
     private Rectangle GetCellRectangle(int col, int row)

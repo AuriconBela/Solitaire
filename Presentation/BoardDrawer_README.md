@@ -7,11 +7,12 @@ The `BoardDrawer` class is a drawing utility for the Solitaire game that renders
 
 ### Core Functionality
 - **Cross-shaped Board Rendering**: Draws the traditional Solitaire board layout with proper cross shape
+- **Accurate Cross Boundary**: Draws a precise outline following the actual cross shape contours (not a simple rectangle)
 - **Cell Type Visualization**:
   - `Occupied` cells: Display marble icons using the marble brush from Constants
   - `Empty` cells: Show as light gray cells with grid lines
   - `Banned` cells: Not drawn (background color shows through)
-- **Boundary Drawing**: Draws a boundary around the entire cross shape using the boundary pen from Constants
+- **Boundary Drawing**: Draws a precise cross-shaped boundary that follows the exact contours of valid cells using the boundary pen from Constants
 
 ### Customization Properties
 - `CellSize`: Size of each cell in pixels (default: 50)
