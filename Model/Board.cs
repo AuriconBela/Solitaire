@@ -3,6 +3,7 @@
 public class Board
 {
     private readonly CellType[,] _board = new CellType[Constants.BoardSize, Constants.BoardSize];
+    private Point? _selected;
 
     public Board()
     {
@@ -13,6 +14,43 @@ public class Board
     public CellType this[int column, int row]
     {
         get => _board[column, row];
+        set => _board[column, row] = value;
+    }
+
+    public Point? Selected { get => _selected; set => _selected = value; }
+
+    public bool IsReachableFrom(Point startPoint, Point targetPoint)
+    {
+        if (this[targetPoint.X, targetPoint.Y] != CellType.Empty)
+        {
+            return false;
+        }
+        if (targetPoint == startPoint)
+        {
+            return false;
+        }
+
+        return IsHorizontallyReachableFrom(startPoint, targetPoint) ||
+               IsVerticallyReachableFrom(startPoint, targetPoint) ||
+               IsDiagonallyReachableFrom(startPoint, targetPoint);
+    }
+
+    private bool IsHorizontallyReachableFrom(Point startPoint, Point targetPoint)
+    {
+        return Math.Abs(startPoint.X - targetPoint.X) == 2 &&
+               Math.Abs(startPoint.Y - targetPoint.Y) == 0;
+    }
+
+    private bool IsVerticallyReachableFrom(Point startPoint, Point targetPoint)
+    {
+        return Math.Abs(startPoint.Y - targetPoint.Y) == 2 &&
+               Math.Abs(startPoint.X - targetPoint.X) == 0;
+    }
+
+    private bool IsDiagonallyReachableFrom(Point startPoint, Point targetPoint)
+    {
+        return Math.Abs(startPoint.Y - targetPoint.Y) == 2 &&
+               Math.Abs(startPoint.X - targetPoint.X) == 2;
     }
 
     private void Init()

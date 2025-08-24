@@ -1,3 +1,4 @@
+using Solitaire.GameFlow;
 using Solitaire.Model;
 using Solitaire.Presentation;
 
@@ -7,6 +8,7 @@ public partial class Form1 : Form
 {
     private readonly Game _game;
     private readonly BoardDrawer _boardDrawer;
+    private State _state = new NormalState();
     
     public Form1() : this(new Game())
     {
@@ -62,8 +64,11 @@ public partial class Form1 : Form
 
     private void HandleCellClick(Point cellPosition)
     {
-        // Placeholder for future game logic
-        // For now, just refresh the display
-        this.Invalidate();
+        if (_state.CanClick(cellPosition, _game.Board))
+        {
+            _state.Select(cellPosition, _game.Board);
+            _state = _state.NextState();
+        }
+        Invalidate();
     }
 }

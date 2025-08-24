@@ -61,7 +61,12 @@ internal class BoardDrawer
                 if (cellType == CellType.Banned)
                     continue;
 
-                DrawCell(graphics, col, row, cellType);
+                // Check if this cell is selected
+                bool isSelected = _game.Board.Selected.HasValue && 
+                                 _game.Board.Selected.Value.X == col && 
+                                 _game.Board.Selected.Value.Y == row;
+
+                DrawCell(graphics, col, row, cellType, isSelected);
             }
         }
 
@@ -78,7 +83,7 @@ internal class BoardDrawer
         DrawBoard(graphics, GetRequiredSize());
     }
 
-    private void DrawCell(Graphics graphics, int col, int row, CellType cellType)
+    private void DrawCell(Graphics graphics, int col, int row, CellType cellType, bool isSelected = false)
     {
         Rectangle cellRect = GetCellRectangle(col, row);
 
@@ -96,11 +101,11 @@ internal class BoardDrawer
         // Draw marble if occupied
         if (cellType == CellType.Occupied)
         {
-            DrawMarble(graphics, cellRect);
+            DrawMarble(graphics, cellRect, isSelected);
         }
     }
 
-    private void DrawMarble(Graphics graphics, Rectangle cellRect)
+    private void DrawMarble(Graphics graphics, Rectangle cellRect, bool isSelected = false)
     {
         // Calculate marble position (centered in cell)
         int marbleX = cellRect.X + (cellRect.Width - _marbleRadius * 2) / 2;
@@ -122,8 +127,17 @@ internal class BoardDrawer
             graphics.FillEllipse(gradientBrush, marbleRect);
         }
 
-        // Add a slight border to the marble for better visibility
-        graphics.DrawEllipse(Constants.MarblePen, marbleRect);
+        // Add a border to the marble - use highlight color if selected
+        if (isSelected)
+        {
+            // Draw a thicker, highlighted border for selected marble
+            graphics.DrawEllipse(Constants.SelectedHighlightPen, marbleRect);
+        }
+        else
+        {
+            // Add a slight border to the marble for better visibility
+            graphics.DrawEllipse(Constants.MarblePen, marbleRect);
+        }
     }
 
     private void DrawBoundary(Graphics graphics)

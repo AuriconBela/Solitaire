@@ -12,6 +12,7 @@ The `BoardDrawer` class is a drawing utility for the Solitaire game that renders
   - `Occupied` cells: Display marble icons using the marble brush from Constants
   - `Empty` cells: Show as light gray cells with grid lines
   - `Banned` cells: Not drawn (background color shows through)
+  - **Selected cells**: Highlighted with yellow border when Board.Selected is not null
 - **Boundary Drawing**: Draws a precise cross-shaped boundary that follows the exact contours of valid cells using the boundary pen from Constants
 
 ### Customization Properties
@@ -22,6 +23,7 @@ The `BoardDrawer` class is a drawing utility for the Solitaire game that renders
 ### Interactive Features
 - `GetCellFromPosition()`: Converts mouse coordinates to board cell coordinates
 - `GetRequiredSize()`: Returns minimum form size needed to display the board
+- **Selection Highlighting**: Automatically highlights selected marbles based on Board.Selected property
 
 ## Usage
 
@@ -70,10 +72,14 @@ The class uses all visual constants from the `Constants` class:
 - `Grid`: Color for cell grid lines
 - `Boundary`: Color for the board boundary
 - `Marble`: Color for marble filling
+- `MarbleLine`: Color for marble borders
+- `SelectedHighlight`: Color for highlighting selected marbles
 - `BackGroundBrush`: Used for form background
 - `MarbleBrush`: Used for drawing marbles
 - `GridPen`: Used for cell borders
 - `BoundaryPen`: Used for board boundary
+- `MarblePen`: Used for marble borders
+- `SelectedHighlightPen`: Used for highlighting selected marbles (thicker, yellow border)
 
 ## Technical Implementation
 

@@ -1,28 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Solitaire.Model;
 
 namespace Solitaire.GameFlow;
 
 internal abstract class State
 {
-    internal abstract bool CanClick(Point point);
+    protected Point? Clicked {get;set;}
+
+    internal virtual bool CanClick(Point point, Board board)
+    {
+        Clicked = point;        
+        return true;    
+    }
+    internal abstract State NextState();
+    internal abstract void Select(Point point, Board board);
 }
 
 internal class NormalState : State
 {
-    internal override bool CanClick(Point point)
+    internal override bool CanClick(Point point, Board board)
+    {        
+        base.CanClick(point, board);
+        return (board.Selected is null) && board[point.X, point.Y] == CellType.Occupied;
+    }
+
+    internal override State NextState()
     {
-        throw new NotImplementedException();
+        return new SelectedState();
+    }
+
+    internal override void Select(Point point, Board board)
+    {
+        board.Selected = point;
     }
 }
 
 internal class SelectedState : State
 {
-    internal override bool CanClick(Point point)
+
+    internal override bool CanClick(Point point, Board board)
+    {        
+        base.CanClick(point, board);
+        if (board.Selected == point)
+        {
+            return true;
+        }
+        if (board[point.X, point.Y] != CellType.Empty)
+        {
+            return false;
+        }
+        return board.IsReachableFrom(board.Selected!.Value, point);
+    }
+
+    internal override State NextState()
     {
-        throw new NotImplementedException();
+        return new NormalState();
+    }
+
+    internal override void Select(Point point, Board board)
+    {
+        board[point.X, point.Y] = CellType.Occupied;
+        board[board.Selected!.Value.X, board.Selected!.Value.Y] = CellType.Empty;
+        board.Selected = null;
     }
 }
