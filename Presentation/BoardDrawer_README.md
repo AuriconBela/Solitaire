@@ -8,6 +8,7 @@ The `BoardDrawer` class is a drawing utility for the Solitaire game that renders
 ### Core Functionality
 - **Cross-shaped Board Rendering**: Draws the traditional Solitaire board layout with proper cross shape
 - **Accurate Cross Boundary**: Draws a precise outline following the actual cross shape contours (not a simple rectangle)
+- **Score Display**: Shows the current game score at the bottom of the screen with centered, bold text
 - **Cell Type Visualization**:
   - `Occupied` cells: Display marble icons using the marble brush from Constants
   - `Empty` cells: Show as light gray cells with grid lines
@@ -22,8 +23,9 @@ The `BoardDrawer` class is a drawing utility for the Solitaire game that renders
 
 ### Interactive Features
 - `GetCellFromPosition()`: Converts mouse coordinates to board cell coordinates
-- `GetRequiredSize()`: Returns minimum form size needed to display the board
+- `GetRequiredSize()`: Returns minimum form size needed to display the board and score area
 - **Selection Highlighting**: Automatically highlights selected marbles based on Board.Selected property
+- **Dynamic Score Display**: Automatically updates and displays the current game score
 
 ## Usage
 
@@ -74,12 +76,16 @@ The class uses all visual constants from the `Constants` class:
 - `Marble`: Color for marble filling
 - `MarbleLine`: Color for marble borders
 - `SelectedHighlight`: Color for highlighting selected marbles
+- `GameScore`: Color for score text
 - `BackGroundBrush`: Used for form background
 - `MarbleBrush`: Used for drawing marbles
+- `GameScoreBrush`: Used for drawing score text
 - `GridPen`: Used for cell borders
 - `BoundaryPen`: Used for board boundary
 - `MarblePen`: Used for marble borders
 - `SelectedHighlightPen`: Used for highlighting selected marbles (thicker, yellow border)
+- `ScoreFont`: Bold Arial font for score display
+- `ScoreAreaHeight`: Reserved height at bottom for score display (50px)
 
 ## Technical Implementation
 
@@ -87,6 +93,8 @@ The class uses all visual constants from the `Constants` class:
 - Uses a standard 2D coordinate system with (0,0) at top-left
 - Board coordinates are translated to screen coordinates using `BoardOffset`
 - Each cell occupies a square area of `CellSize` × `CellSize` pixels
+- Score area reserves 50px at the bottom of the form for score display
+- Board centering accounts for score area when calculating vertical positioning
 
 ### Drawing Optimization
 - Form uses double buffering for smooth rendering

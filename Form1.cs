@@ -66,9 +66,14 @@ public partial class Form1 : Form
     {
         if (_state.CanClick(cellPosition, _game.Board))
         {
-            _state.Select(cellPosition, _game.Board);
+            _state.Select(cellPosition, _game.Board, OnRemoval);
             _state = _state.NextState();
         }
         Invalidate();
+    }
+
+    private void OnRemoval()
+    {
+        _game.Score += 1;
     }
 }

@@ -30,24 +30,70 @@ public class Board
             return false;
         }
 
-        return IsHorizontallyReachableFrom(startPoint, targetPoint) ||
+        var cellToBeRemoved = CellBetween(startPoint, targetPoint);
+        var isRemoveAble = cellToBeRemoved is not null && this[cellToBeRemoved.Value.X, cellToBeRemoved.Value.Y] != CellType.Empty;
+        return (IsHorizontallyReachableFrom(startPoint, targetPoint) ||
                IsVerticallyReachableFrom(startPoint, targetPoint) ||
-               IsDiagonallyReachableFrom(startPoint, targetPoint);
+               IsDiagonallyReachableFrom(startPoint, targetPoint)) &&
+               isRemoveAble;
     }
 
-    private bool IsHorizontallyReachableFrom(Point startPoint, Point targetPoint)
+    public static Point? CellBetween(Point startPoint, Point targetPoint)
+    {
+        if (IsHorizontallyReachableFrom(startPoint, targetPoint))
+        {
+            if (startPoint.X > targetPoint.X)
+            {
+                return startPoint with { X = startPoint.X - 1 };
+            };
+            return startPoint with { X = startPoint.X + 1 };
+        }
+        if (IsVerticallyReachableFrom(startPoint, targetPoint))
+        {
+            if (startPoint.Y > targetPoint.Y)
+            {
+                return startPoint with { Y = startPoint.Y - 1 };
+            };
+            return startPoint with { Y = startPoint.Y + 1 };
+        }
+        if (IsDiagonallyReachableFrom(startPoint, targetPoint))
+        {
+            int x, y;
+            if (startPoint.X > targetPoint.X)
+            {
+                x = startPoint.X - 1;
+            }
+            else
+            {
+                x = startPoint.X + 1;
+            }
+
+            if (startPoint.Y > targetPoint.Y)
+            {
+                y = startPoint.Y - 1;
+            }
+            else
+            {
+                y = startPoint.Y + 1;
+            }
+            return new(x, y);
+        }
+        return null;
+    }
+
+    private static bool IsHorizontallyReachableFrom(Point startPoint, Point targetPoint)
     {
         return Math.Abs(startPoint.X - targetPoint.X) == 2 &&
                Math.Abs(startPoint.Y - targetPoint.Y) == 0;
     }
 
-    private bool IsVerticallyReachableFrom(Point startPoint, Point targetPoint)
+    private static bool IsVerticallyReachableFrom(Point startPoint, Point targetPoint)
     {
         return Math.Abs(startPoint.Y - targetPoint.Y) == 2 &&
                Math.Abs(startPoint.X - targetPoint.X) == 0;
     }
 
-    private bool IsDiagonallyReachableFrom(Point startPoint, Point targetPoint)
+    private static bool IsDiagonallyReachableFrom(Point startPoint, Point targetPoint)
     {
         return Math.Abs(startPoint.Y - targetPoint.Y) == 2 &&
                Math.Abs(startPoint.X - targetPoint.X) == 2;
@@ -92,7 +138,7 @@ public class Board
             int y = random.Next(0, Constants.BoardSize);
             emptyCell = new Point(x, y);
         }
-        while (this[emptyCell.X,emptyCell.Y] == CellType.Banned);
+        while (this[emptyCell.X, emptyCell.Y] == CellType.Banned);
 
         return emptyCell;
     }

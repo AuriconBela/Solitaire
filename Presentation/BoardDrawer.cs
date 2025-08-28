@@ -73,6 +73,9 @@ internal class BoardDrawer
         // Draw boundary around the cross shape
         DrawBoundary(graphics);
 
+        // Draw the score at the bottom
+        DrawScore(graphics, clientSize);
+
         // Restore original offset
         _boardOffset = originalOffset;
     }
@@ -149,6 +152,19 @@ internal class BoardDrawer
         }
     }
 
+    private void DrawScore(Graphics graphics, Size clientSize)
+    {
+        // Calculate score position (centered horizontally, at bottom)
+        string scoreText = $"Score: {_game.Score}";
+        SizeF textSize = graphics.MeasureString(scoreText, Constants.ScoreFont);
+        
+        float scoreX = (clientSize.Width - textSize.Width) / 2;
+        float scoreY = clientSize.Height - Constants.ScoreAreaHeight + (Constants.ScoreAreaHeight - textSize.Height) / 2;
+        
+        // Draw score text
+        graphics.DrawString(scoreText, Constants.ScoreFont, Constants.GameScoreBrush, scoreX, scoreY);
+    }
+
     private GraphicsPath CreateCrossShapePath()
     {
         var path = new GraphicsPath();
@@ -197,7 +213,7 @@ internal class BoardDrawer
     {
         int x = _boardOffset.X + col * _cellSize;
         int y = _boardOffset.Y + row * _cellSize;
-        return new Rectangle(x, y, _cellSize, _cellSize);
+        return new (x, y, _cellSize, _cellSize);
     }
 
     public Point? GetCellFromPosition(Point mousePosition, Size clientSize)
@@ -211,7 +227,7 @@ internal class BoardDrawer
             row >= 0 && row < Constants.BoardSize &&
             _game.Board[col, row] != CellType.Banned)
         {
-            return new Point(col, row);
+            return new (col, row);
         }
 
         return null;
@@ -225,9 +241,9 @@ internal class BoardDrawer
 
     public Size GetRequiredSize()
     {
-        return new Size(
+        return new (
             _boardOffset.X * 2 + Constants.BoardSize * _cellSize,
-            _boardOffset.Y * 2 + Constants.BoardSize * _cellSize
+            _boardOffset.Y * 2 + Constants.BoardSize * _cellSize + Constants.ScoreAreaHeight
         );
     }
 
@@ -235,11 +251,14 @@ internal class BoardDrawer
     {
         int boardWidth = Constants.BoardSize * _cellSize;
         int boardHeight = Constants.BoardSize * _cellSize;
+        
+        // Account for score area at bottom when centering vertically
+        int availableHeight = clientSize.Height - Constants.ScoreAreaHeight;
 
         int offsetX = Math.Max(0, (clientSize.Width - boardWidth) / 2);
-        int offsetY = Math.Max(0, (clientSize.Height - boardHeight) / 2);
+        int offsetY = Math.Max(0, (availableHeight - boardHeight) / 2);
 
-        return new Point(offsetX, offsetY);
+        return new (offsetX, offsetY);
     }
 
     private GraphicsPath CreateRoundedRectanglePath(Rectangle rect, int cornerRadius)

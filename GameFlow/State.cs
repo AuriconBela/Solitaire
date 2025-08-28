@@ -12,7 +12,7 @@ internal abstract class State
         return true;    
     }
     internal abstract State NextState();
-    internal abstract void Select(Point point, Board board);
+    internal abstract void Select(Point point, Board board, Action? onSuccess);
 }
 
 internal class NormalState : State
@@ -28,7 +28,7 @@ internal class NormalState : State
         return new SelectedState();
     }
 
-    internal override void Select(Point point, Board board)
+    internal override void Select(Point point, Board board, Action? onSuccess)
     {
         board.Selected = point;
     }
@@ -56,10 +56,24 @@ internal class SelectedState : State
         return new NormalState();
     }
 
-    internal override void Select(Point point, Board board)
+    internal override void Select(Point point, Board board, Action? onSuccess)
     {
+        if (point == board.Selected!.Value)
+        {
+            board.Selected = null;
+            return;
+        }
         board[point.X, point.Y] = CellType.Occupied;
         board[board.Selected!.Value.X, board.Selected!.Value.Y] = CellType.Empty;
+
+        var removedCell = Board.CellBetween(board.Selected!.Value, point);
+
+        if (removedCell is not null)
+        {
+            board[removedCell!.Value.X, removedCell!.Value.Y] = CellType.Empty;
+            onSuccess?.Invoke();
+        }
+
         board.Selected = null;
     }
 }
