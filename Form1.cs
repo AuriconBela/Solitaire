@@ -57,7 +57,6 @@ public partial class Form1 : Form
         var cellPosition = _boardDrawer.GetCellFromPosition(e.Location, ClientSize);
         if (cellPosition.HasValue)
         {
-            // Handle cell click (for future game logic)
             HandleCellClick(cellPosition.Value);
         }
     }
